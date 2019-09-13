@@ -2,7 +2,9 @@ package cmd
 
 import (
 	"fmt"
+	"os"
 
+	"github.com/qutheory/vc-deploy/api"
 	"github.com/spf13/cobra"
 )
 
@@ -12,14 +14,16 @@ var (
 		Short: "Deploy your app",
 		Long:  "",
 		Run: func(cmd *cobra.Command, args []string) {
-			fmt.Println("DEPLOY!!")
-			fmt.Println("Deploying " + Slug)
+			fmt.Println("Deploying: " + Slug + " Environment: " + Env)
 
-			if !NoFollow {
-				fmt.Println("Follow!")
+			app, env, err := api.GetAppEnv(Slug, Env, Token)
+			if err != nil {
+				fmt.Println("App/Env not found")
+				os.Exit(1)
 			}
 
-			// api.GetUser()
+			fmt.Println(app.Id)
+			fmt.Println(env.Id)
 		},
 	}
 )
@@ -35,7 +39,11 @@ func init() {
 
 	deployCmd.Flags().StringVarP(&Slug, "app", "a", "", "Application slug")
 	deployCmd.Flags().StringVarP(&Env, "env", "e", "", "Environment")
-	deployCmd.Flags().StringVarP(&Slug, "token", "t", "", "Developer token")
-	deployCmd.Flags().StringVarP(&Slug, "branch", "b", "", "Branch")
+	deployCmd.Flags().StringVarP(&Token, "token", "t", "", "Developer token")
+	deployCmd.Flags().StringVarP(&Branch, "branch", "b", "", "Branch")
 	deployCmd.Flags().BoolVarP(&NoFollow, "no-follow", "", false, "Don't follow the log output")
+
+	deployCmd.MarkFlagRequired("app")
+	deployCmd.MarkFlagRequired("env")
+	deployCmd.MarkFlagRequired("token")
 }
