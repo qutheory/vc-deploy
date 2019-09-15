@@ -18,7 +18,7 @@ chmod +x vc-deploy
 Now you can run it:
 
 ```
-./vc-deploy --app <app-slug> --env <env> --token <developer-token> 
+./vc-deploy deploy --app my-app --env my-env --token my-developer-token
 ```
 
 **Important:** The developer token, should be kept private, as it gives full access to the Vapor Cloud 2 API.
@@ -26,5 +26,5 @@ Now you can run it:
 If you want to set a custom branch to deploy, you can specify it like this. If you don't specify a branch, the environments default branch will be used.
 
 ```
-./vc-deploy --app my-app --env my-env --token my-developer-token --branch my-branch
+./vc-deploy deploy --app my-app --env my-env --token my-developer-token --branch my-branch
 ```
