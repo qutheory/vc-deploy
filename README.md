@@ -11,7 +11,7 @@ When you trigger a deploy, it will give all the output in real-time, so the stat
 Start by downloading the binary to the system.
 
 ```
-curl -O https://github.com/qutheory/vc-deploy/releases/download/v0.1.0/vc-deploy
+curl -OL https://github.com/qutheory/vc-deploy/releases/download/v0.1.0/vc-deploy
 chmod +x vc-deploy
 ```
 
