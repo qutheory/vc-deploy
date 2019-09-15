@@ -1,6 +1,7 @@
 package api
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -20,6 +21,12 @@ type Application struct {
 type Environment struct {
 	Id   string `json:"id"`
 	Slug string `json:"slug"`
+}
+
+type Dep struct {
+	Activity struct {
+		Id string `json:"id"`
+	} `json:"activity"`
 }
 
 func baseURL() string {
@@ -119,4 +126,45 @@ func GetEnvironment(appID string, slug string, token string) (*Environment, *htt
 	}
 
 	return nil, nil
+}
+
+// Deploy trigger a deploy
+func Deploy(envID string, branch string, token string) (*Dep, *http.Response) {
+	url := baseURL() + "/v2/apps/environments/" + envID + "/deploy"
+
+	client := http.Client{
+		Timeout: time.Second * 2,
+	}
+
+	var jsonStr = []byte(`{}`)
+
+	if branch != "" {
+		jsonStr = []byte("{\"branch\": \"" + branch + "\"}")
+	}
+
+	req, err := http.NewRequest(http.MethodPatch, url, bytes.NewBuffer(jsonStr))
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	req.Header.Set("Authorization", "Bearer "+token)
+	req.Header.Set("Content-Type", "application/json")
+
+	res, getErr := client.Do(req)
+	if getErr != nil || res.StatusCode != http.StatusOK {
+		return nil, res
+	}
+
+	body, readErr := ioutil.ReadAll(res.Body)
+	if readErr != nil {
+		log.Fatal(readErr)
+	}
+
+	activity := &Dep{}
+	jsonErr := json.Unmarshal(body, &activity)
+	if jsonErr != nil {
+		log.Fatal(jsonErr)
+	}
+
+	return activity, nil
 }

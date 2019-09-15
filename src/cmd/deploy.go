@@ -16,14 +16,19 @@ var (
 		Run: func(cmd *cobra.Command, args []string) {
 			fmt.Println("Deploying: " + Slug + " Environment: " + Env)
 
-			app, env, err := api.GetAppEnv(Slug, Env, Token)
+			_, env, err := api.GetAppEnv(Slug, Env, Token)
 			if err != nil {
 				fmt.Println("App/Env not found")
 				os.Exit(1)
 			}
 
-			fmt.Println(app.Id)
-			fmt.Println(env.Id)
+			activity, err := api.Deploy(env.Id, Branch, Token)
+			if err != nil {
+				fmt.Println(err)
+				os.Exit(1)
+			}
+
+			api.Listen(activity.Activity.Id)
 		},
 	}
 )
