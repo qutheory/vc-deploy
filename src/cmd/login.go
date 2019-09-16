@@ -31,11 +31,12 @@ var (
 			password := strings.TrimSpace(enteredPassword)
 
 			_, err := api.Login(email, password)
+			fmt.Println("")
 			if err != nil {
 				fmt.Println("Authentication failed")
 				os.Exit(1)
 			}
-			fmt.Println("You have successfully logged in")
+			fmt.Println("You are now signed in.")
 		},
 	}
 )
