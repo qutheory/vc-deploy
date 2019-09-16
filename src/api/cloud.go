@@ -168,3 +168,42 @@ func Deploy(envID string, branch string, token string) (*Dep, *http.Response) {
 
 	return activity, nil
 }
+
+type User struct {
+	Token   string `json:"token"`
+	FirstName string `json:"firstName"`
+	LastName string `json:"lastName"`
+}
+
+func Login(email string, password string) (*User, *http.Response) {
+	url := baseURL() + "/v2/auth/users/login"
+
+	client := http.Client{
+		Timeout: time.Second * 2,
+	}
+
+	req, err := http.NewRequest(http.MethodPost, url, nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	req.SetBasicAuth(email, password)
+
+	res, getErr := client.Do(req)
+	if getErr != nil || res.StatusCode != http.StatusOK {
+		return nil, res
+	}
+
+	body, readErr := ioutil.ReadAll(res.Body)
+	if readErr != nil {
+		log.Fatal(readErr)
+	}
+
+	user := &User{}
+	jsonErr := json.Unmarshal(body, &user)
+	if jsonErr != nil {
+		log.Fatal(jsonErr)
+	}
+
+	return user, nil
+}
